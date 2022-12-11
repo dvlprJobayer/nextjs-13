@@ -1,29 +1,25 @@
 import React from "react";
+import { PrismaClient } from "@prisma/client";
 import Link from "next/link";
 
-const Layout = ({ children }) => {
+const Layout = async ({ children }) => {
+  const prisma = new PrismaClient();
+  const posts = await prisma.post.findMany();
+
   return (
     <div className="flex">
-      <div>
-        <ul className="pl-5 mt-5">
-          <li>
-            <Link className="text-xl" href="/post/p1">
-              Post 1
-            </Link>
-          </li>
-          <li className="mt-2">
-            <Link className="text-xl" href="/post/p2">
-              Post 2
-            </Link>
-          </li>
-          <li className="mt-2">
-            <Link className="text-xl" href="/post/p3">
-              Post 3
-            </Link>
-          </li>
+      <aside className="bg-stone-800 h-full fixed text-white">
+        <ul className="px-12 mt-5">
+          {posts.map((post) => (
+            <li key={post.id}>
+              <Link className="text-xl" href={`/post/${post.id}`}>
+                {post.title}
+              </Link>
+            </li>
+          ))}
         </ul>
-      </div>
-      <div className="pl-6 mt-4">{children}</div>
+      </aside>
+      <div className="pl-64 mt-4">{children}</div>
     </div>
   );
 };
