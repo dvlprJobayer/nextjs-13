@@ -1,17 +1,21 @@
-import React from "react";
-import { PrismaClient } from "@prisma/client";
+"use client";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
-const Layout = async ({ children }) => {
-  const prisma = new PrismaClient();
-  const posts = await prisma.post.findMany();
+const Layout = ({ children }) => {
+  const [posts, setPosts] = useState([]);
+  useEffect(() => {
+    fetch("https://dummyjson.com/posts")
+      .then((res) => res.json())
+      .then((data) => setPosts(data.posts.slice(0, 5)));
+  }, []);
 
   return (
     <div className="flex">
-      <aside className="bg-stone-800 h-full fixed text-white">
-        <ul className="px-12 mt-5">
+      <aside className="bg-stone-800 w-1/4 h-full fixed text-white">
+        <ul className="px-6 mt-5 text-center">
           {posts.map((post) => (
-            <li key={post.id}>
+            <li key={post.id} className="mt-2">
               <Link className="text-xl" href={`/post/${post.id}`}>
                 {post.title}
               </Link>
@@ -19,7 +23,7 @@ const Layout = async ({ children }) => {
           ))}
         </ul>
       </aside>
-      <div className="pl-64 mt-4">{children}</div>
+      <div className="pl-96 mt-4">{children}</div>
     </div>
   );
 };

@@ -1,8 +1,14 @@
-import { PrismaClient } from "@prisma/client";
+"use client";
 
-const Page = async ({ params }) => {
-  const prisma = new PrismaClient();
-  const post = await prisma.post.findFirst({ where: { id: +params.postId } });
+import { useState, useEffect } from "react";
+
+const Page = ({ params }) => {
+  const [post, setPost] = useState({});
+  useEffect(() => {
+    fetch(`https://dummyjson.com/posts/${params.postId}`)
+      .then((res) => res.json())
+      .then((data) => setPost(data));
+  }, [params.postId]);
 
   if (!post) {
     throw new Error("Post could not found!");
@@ -11,7 +17,7 @@ const Page = async ({ params }) => {
   return (
     <div>
       <h1 className="text-4xl">{post.title}</h1>
-      <p>{post.description}</p>
+      <p>{post.body}</p>
     </div>
   );
 };
